@@ -1,0 +1,23 @@
+{
+  "site": "Tvuna AI",
+  "version": 16,
+  "source_commit": "800edf89a971eb1631bd156d3abb61cadedc6ae9",
+  "export_date": "2026-10-15",
+  "source_url": "https://tvuna-ai.sincai.chatgpt.site/",
+  "source_changes": "Application source is unchanged. Export README replaces the old README; configuration examples, deployment guide, asset inventory, checksums and ignore rules are added.",
+  "excluded": [
+    ".git",
+    "node_modules",
+    "dist",
+    ".next",
+    ".wrangler",
+    ".sites-runtime",
+    "actual environment files",
+    "runtime secrets",
+    "databases and leads",
+    "screenshots",
+    "logs",
+    "credentials"
+  ],
+  "live_site_modified": false
+}
