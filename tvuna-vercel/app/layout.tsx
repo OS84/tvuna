@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://tvuna.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.tvuna.app"),
   title: "תבונה AI — מפנים מקום למה שחשוב",
   description: "טובעים בשוטף? גלו איך AI יכול לעזור לכם בעסק. פגישת מיפוי להיכרות עם האפשרויות ולזיהוי הזדמנויות מעשיות.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: "תבונה AI | לפעול בתבונה",
     description: "טובעים בשוטף? גלו איך AI יכול לעזור לכם בעסק. פגישת היכרות עם האפשרויות וזיהוי הזדמנויות לשיפור.",
     type: "website",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://tvuna.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.tvuna.app",
     locale: "he_IL",
   },
 };

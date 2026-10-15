@@ -1,47 +1,33 @@
 import type { LeadInput } from './lead-validation';
 
-export const EMAIL_TIMEOUT_MS = 90_000;
+export const EMAIL_TIMEOUT_MS = 25_000;
 export class LeadEmailError extends Error {
   code: 'timeout' | 'network' | 'busy' | 'rejected';
-  constructor(code: 'timeout' | 'network' | 'busy' | 'rejected') {
-    super(`Lead email: ${code}`);
+  constructor(code: 'timeout' | 'network' | 'busy' | 'rejected', message?: string) {
+    super(message || 'לא התקבל אישור לשליחת הפנייה. אפשר לנסות שוב או לפנות אלינו ישירות.');
     this.name = 'LeadEmailError';
     this.code = code;
   }
 }
 
-// FormSubmit is the email processor used by the original landing page.
-export async function sendLeadEmail(lead: LeadInput, send: typeof fetch = fetch, timeoutMs = EMAIL_TIMEOUT_MS): Promise<void> {
+// The browser calls only our same-origin endpoint. Provider keys stay on the server.
+export async function sendLeadEmail(lead: LeadInput, turnstileToken: string, website = '', send: typeof fetch = fetch, timeoutMs = EMAIL_TIMEOUT_MS): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    // Form encoding is supported by FormSubmit and avoids a cross-origin JSON
-    // preflight on mobile. Do not add non-safelisted request headers here.
-    const fields: Record<string,string> = {
-      name: lead.contactName,
-      'שם העסק': lead.businessName,
-      'אמצעי קשר מועדף': lead.contactMethod === 'whatsapp' ? 'WhatsApp' : 'אימייל',
-      'פרטי קשר': lead.contactValue,
-      'מספר פנייה': lead.submissionId,
-      ...(lead.contactMethod === 'email' ? {email:lead.contactValue, _replyto:lead.contactValue} : {}),
-      _subject: `תבונה AI — פנייה חדשה: ${lead.businessName}`,
-      _template:'table', _captcha:'false', _url:typeof window !== 'undefined' ? `${window.location.origin}/` : `${(process.env.NEXT_PUBLIC_SITE_URL || 'https://tvuna.app').replace(/\/$/, '')}/`,
-    };
-    const result = await send(`https://formsubmit.co/ajax/${process.env.NEXT_PUBLIC_FORMSUBMIT_RECIPIENT || 'sincai@gmail.com'}`, {
-      method:'POST',
-      headers: {'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8', Accept:'application/json'},
-      body: new URLSearchParams(fields).toString(),
-      signal:controller.signal,
-      credentials:'omit',
-      referrerPolicy:'origin',
+    const result = await send('/api/contact', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({...lead, turnstileToken, website}),
+      signal: controller.signal, credentials: 'same-origin',
     });
-    if (result.status === 429) throw new LeadEmailError('busy');
-    const body = await result.json().catch(() => null) as {success?:boolean|string}|null;
-    if(!result.ok || (body?.success !== true && body?.success !== 'true')) throw new LeadEmailError('rejected');
+    const body = await result.json().catch(() => null) as {ok?:boolean;reference?:string;error?:string;code?:string}|null;
+    if (!result.ok || body?.ok !== true || typeof body.reference !== 'string') {
+      const message = typeof body?.error === 'string' && body.error.length <= 500 ? body.error : undefined;
+      throw new LeadEmailError(result.status === 429 ? 'busy' : result.status === 504 ? 'timeout' : 'rejected', message);
+    }
+    return body.reference;
   } catch (error) {
-    if(error instanceof LeadEmailError) throw error;
-    throw new LeadEmailError(controller.signal.aborted ? 'timeout' : 'network');
-  } finally {
-    clearTimeout(timeout);
-  }
+    if (error instanceof LeadEmailError) throw error;
+    throw new LeadEmailError(controller.signal.aborted ? 'timeout' : 'network', 'אישור השליחה מתעכב. ייתכן שהפנייה כבר נשלחה. הפרטים נשארו כאן, ואפשר לנסות שוב.');
+  } finally { clearTimeout(timeout); }
 }

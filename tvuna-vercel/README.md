@@ -1,52 +1,70 @@
-# Tvuna AI — Vercel upload package
+# Tvuna AI — free contact update
 
-Prepared for GitHub `OS84/tvuna` and the domain `tvuna.app`.
-The landing page and contact page preserve the version 16 design and Hebrew RTL layout.
+Prepared for `OS84/tvuna`, Vercel Root Directory `tvuna-vercel`, and `https://www.tvuna.app`.
 
-## Publish without using a terminal
+## What works immediately after deploying this update
 
-1. Extract `tvuna-vercel.zip` and open the extracted `tvuna-vercel` folder.
-2. Open https://github.com/OS84/tvuna. For an empty repository, choose **uploading an existing file**; otherwise choose **Add file → Upload files**.
-3. Drag the contents of this folder into GitHub, including the `app`, `lib`, `public`, and `tests` folders. Upload the contents, not the ZIP or its outer folder. `package.json` must appear at the repository root.
-4. Commit the files to `main`.
-5. Open https://vercel.com/new, select the **os84s-projects** team, and import **OS84/tvuna**. If needed, allow the Vercel GitHub integration to see this repository.
-6. Set the project name to **tvuna**, Framework Preset to **Next.js**, Root Directory to **./**, and Node.js to **24.x** if shown. Keep the normal Next.js output settings. No environment variables or database are required for these defaults.
-7. Click **Deploy**. Wait for **Ready** and open the provided `vercel.app` address.
-8. In this deployed project's **Settings → Domains**, add **tvuna.app**. Add **www.tvuna.app** and redirect it to **tvuna.app** if desired. Follow the exact DNS instructions Vercel shows; a team-level domain entry alone does not attach it to this project.
-9. Open https://tvuna.app and its contact page. Send a test inquiry yourself, check `sincai@gmail.com` for a FormSubmit activation message, and activate if requested. Then submit again and confirm the actual inquiry arrives before sharing widely.
+- Direct WhatsApp chat to **+972 50-338-8741**, with an editable Hebrew draft. The visitor presses Send inside WhatsApp.
+- Direct email draft to **sincai@gmail.com**, with a Gmail web-compose alternative and a copy-address button.
+- Clear Hebrew labels, keyboard focus, and responsive layout.
+- No FormSubmit browser request, activation dependency, or false “message received” state.
+- No new accounts, mailbox subscriptions, or DNS changes required for these direct buttons.
 
-## Contact behavior
+The on-site callback form is shown only when its verified sender and anti-spam service credentials are configured. Until then the page uses direct contact. Direct buttons open the visitor's messaging application; the website itself does not send or store those messages.
 
-The browser sends inquiries directly to FormSubmit, the processor used by the original site, for delivery to **sincai@gmail.com**. Email and WhatsApp are choices for how Dan should reply; choosing WhatsApp still sends the inquiry by email.
+## Upload the fix
 
-The form validates the fields and honeypot in the browser, retains the 90-second provider timeout, and shows success only after FormSubmit reports acceptance. Acceptance does not prove inbox delivery. An uncertain response leaves the entered details intact. Repeating a request may send another email even if its reference is unchanged.
+1. Extract `tvuna-contact-fix.zip`.
+2. Open https://github.com/OS84/tvuna and choose **Add file → Upload files**.
+3. Drag the extracted **tvuna-vercel folder** into the upload area. Keep this exact folder name so it updates the existing `tvuna-vercel/...` files. Commit the changes to `main`.
+4. In Vercel keep **Root Directory = tvuna-vercel**, **Framework = Next.js**, and **Node.js = 24.x**. Deploy the latest commit. An existing Git connection may start this automatically.
+5. Open https://www.tvuna.app/contact in a private browser window. Verify the WhatsApp recipient and email recipient before sending a test yourself.
 
-This landing-page edition has no database, no stored-lead backup, no private inbox, and no local `/api/leads` endpoint. Validation and the honeypot run in the browser; they do not replace a server-side abuse control. FormSubmit handles its own service limits. The original Cloudflare source and private inbox are preserved outside this package.
+No `node_modules`, `.next`, credentials, or customer data are included in the ZIP. Do not upload the ZIP itself.
 
-The direct email link remains available if the form service is unavailable. FormSubmit may require activation for a new domain. No real test email was sent while preparing this package.
+## Set up hello@tvuna.app with Zoho Free
 
-## Optional configuration
+The user selected Zoho's free custom-domain mailbox. This is a separate mailbox setup, not something Vercel creates. The current domain uses `ns1.vercel-dns.com` and `ns2.vercel-dns.com`. At inspection on 15 October 2026 there were no MX, root TXT, or DMARC records. Re-check before applying changes.
 
-These public build-time values have working defaults:
+1. Open [Zoho's Forever Free signup](https://workplace.zoho.com/signup?plan=free&type=org). Confirm that the actual offered plan is **Forever Free**. It is available only in selected data centers and excludes IMAP/POP/ActiveSync. Use Zoho webmail or its mobile app. If only paid plans/trials are offered, keep Dan's current Gmail; no paid subscription is needed for the website.
+2. Choose an existing domain and enter **tvuna.app**. The account owner completes signup, password, phone verification, and service terms privately.
+3. Zoho gives you a unique domain-verification TXT record. In [Vercel's tvuna.app domain settings](https://vercel.com/os84s-projects/~/domains/tvuna.app), add that exact record under DNS. Use the root name (blank in Vercel) if Zoho specifies `@`. Return to Zoho and verify.
+4. Create the **hello** mailbox. Use the MX hosts and priorities shown in **your Zoho account**, since they depend on the data center. Add those MX records at the root in Vercel. Preserve the website's A/ALIAS/CNAME records and the nameservers.
+5. Add Zoho's SPF and DKIM TXT records from its setup screen. Use one SPF record per hostname; combine authorized senders if one already exists. Verify DKIM in Zoho. Do not copy region-specific records from an unrelated tutorial.
+6. After SPF/DKIM are verified, add DMARC initially in monitoring mode following Zoho's guidance. Start with `v=DMARC1; p=none` at `_dmarc`. Reporting can be added after a report mailbox/alias is created. Tighten the policy only after checking authentication.
+7. Send a message **to** hello@tvuna.app from an outside account, then reply **from** Zoho. Check both directions and spam folders before switching the website.
+8. In the Vercel project → **Settings → Environment Variables**, set `CONTACT_EMAIL` to `hello@tvuna.app` for Production and redeploy. The direct email link, Gmail composer link, copied address, and optional form recipient update together. The Gmail button is for a visitor composing an email to you; your new business inbox is accessed in Zoho.
 
-- `NEXT_PUBLIC_SITE_URL`: `https://tvuna.app` (sharing metadata).
-- `NEXT_PUBLIC_FORMSUBMIT_RECIPIENT`: `sincai@gmail.com`.
+The default remains `sincai@gmail.com` until the custom mailbox is activated and this variable changes. This avoids advertising a non-working address.
 
-Set changes in Vercel's environment variables and redeploy. Do not put credentials in public variables. The form identifies its actual browser origin automatically for both preview and production URLs.
+Sources: [Zoho free plan](https://www.zoho.com/mail/zohomail-pricing.html), [domain verification](https://www.zoho.com/mail/help/adminconsole/domain-verification.html), [email delivery](https://www.zoho.com/mail/help/adminconsole/configure-email-delivery.html), [Vercel email DNS](https://vercel.com/docs/domains/managing-dns-records#setting-up-email-for-your-domain).
 
-## Local development
+## Optional: enable the on-site callback form
 
-Use Node.js 24:
+Direct contact already works without this. To send inquiries without opening the visitor's mail app, the package includes a server endpoint using Resend, plus Cloudflare Turnstile. Both offer free plans with their current plan limits; do not select paid upgrades for this launch.
 
-```sh
-npm ci
-npm test
-npm run build
-npm start
-```
+1. Create a Resend account on its Free plan. Verify the sending subdomain **notify.tvuna.app** with the exact DNS records Resend supplies. Keep Zoho's root MX records intact. Create a sending-only API key restricted to the verified domain.
+2. Create a Cloudflare Turnstile Managed widget. Allow both **tvuna.app** and **www.tvuna.app**. No nameserver migration to Cloudflare is needed. Add a specific preview hostname only if testing there.
+3. Add these values in Vercel for the intended environment. Never paste secrets into GitHub or chat:
 
-For development, run `npm run dev`. Open http://localhost:3000.
+| Variable | Value |
+| --- | --- |
+| `CONTACT_EMAIL` | `hello@tvuna.app` after activation, or `sincai@gmail.com` |
+| `CONTACT_FROM` | `Tvuna AI <website@notify.tvuna.app>` |
+| `RESEND_API_KEY` | The sending-only key from Resend |
+| `TURNSTILE_SITE_KEY` | The widget's public site key |
+| `TURNSTILE_SECRET_KEY` | The widget's secret key |
 
-## Assets and provenance
+4. Redeploy. The callback form appears beneath the direct buttons. Email/WhatsApp inside this form specify the visitor's preferred callback method; the notification is emailed to your fixed contact inbox.
+5. Submit one email-mode and one WhatsApp-mode test yourself. Confirm real arrival in the inbox and provider delivery status; provider acceptance alone is not proof of delivery. Reply-To is set to the visitor's email for email-mode inquiries.
 
-Based on the supplied Tvuna AI version 16 export (source commit `800edf89a971eb1631bd156d3abb61cadedc6ae9`). Uses the original inline SVG artwork, favicon, and stylesheet. Heebo loads from Google Fonts with Arial/sans-serif fallbacks. Unused starter UI components and their dependencies are not included. No credentials, lead records, platform identity headers, or original hosting IDs are included.
+The server verifies the request origin, body size, fields, honeypot and single-use Turnstile token (including hostname and action). It sends only to the configured business address. No provider secret reaches the browser. Resend idempotency keys deduplicate unchanged retries for 24 hours. A timeout is shown as uncertain, with details retained. There is no database or private lead inbox; successful delivery depends on the email provider. Turnstile is abuse protection, not an unlimited guarantee; monitor provider quotas and delivery errors in Resend.
+
+Sources: [Resend pricing](https://resend.com/pricing), [domain verification](https://resend.com/docs/dashboard/domains/introduction), [idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [Turnstile](https://developers.cloudflare.com/turnstile/get-started/).
+
+## Development and verification
+
+Node.js 24, `npm ci`, `npm test`, `npm run build`, `npm start`.
+The tests use mocked delivery and verification services; they do not send mail. The release build checks the landing page, direct contact page, callback form, and server route. Live mailbox activation and end-to-end delivery must be verified after setup.
+
+Based on the supplied version 16 design. Uses original SVG artwork, favicon, and Heebo stylesheet with Google Fonts. The original export remains outside this package.

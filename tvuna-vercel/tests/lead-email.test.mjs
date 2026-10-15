@@ -2,56 +2,26 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {sendLeadEmail} from '../lib/lead-email.ts';
 const lead={contactName:'בדיקה',businessName:'עסק בדיקה',contactMethod:'whatsapp',contactValue:'+12025550100',submissionId:crypto.randomUUID()};
-test('email includes every field and preferred WhatsApp contact',async()=>{
- await sendLeadEmail(lead,async(url,options)=>{
-  assert.equal(url,'https://formsubmit.co/ajax/sincai@gmail.com');
-  const payload=Object.fromEntries(new URLSearchParams(options.body));assert.equal(payload.name,lead.contactName);assert.equal(payload['שם העסק'],lead.businessName);assert.equal(payload['אמצעי קשר מועדף'],'WhatsApp');assert.equal(payload['פרטי קשר'],lead.contactValue);assert.equal(payload['מספר פנייה'],lead.submissionId);
-  return Response.json({success:'true'});
- });
+test('browser sends to same-origin API with verification token and no provider key', async()=>{
+ const result=await sendLeadEmail(lead,'verified-token','',async(url,options)=>{
+  assert.equal(url,'/api/contact'); assert.equal(options.credentials,'same-origin');
+  assert.equal(options.headers.Authorization,undefined);
+  const data=JSON.parse(options.body);assert.equal(data.turnstileToken,'verified-token');assert.equal(data.website,'');assert.equal(data.submissionId,lead.submissionId);
+  return Response.json({ok:true,reference:lead.submissionId});
+ });assert.equal(result,lead.submissionId);
 });
-test('activation-required response never counts as email success',async()=>{
- await assert.rejects(sendLeadEmail(lead,async()=>Response.json({success:'false',message:'needs Activation'})));
+test('non-success never shows confirmation',async()=>{
+ await assert.rejects(sendLeadEmail(lead,'token','',async()=>Response.json({ok:true},{status:503})),e=>e.code==='rejected');
 });
-test('provider failure never counts as email success',async()=>{
- await assert.rejects(sendLeadEmail(lead,async()=>Response.json({success:'true'},{status:503})));
+test('an accepted response must contain a reference',async()=>{
+ await assert.rejects(sendLeadEmail(lead,'token','',async()=>Response.json({ok:true})),e=>e.code==='rejected');
 });
-test('email contact can be replied to directly',async()=>{
- await sendLeadEmail({...lead,contactMethod:'email',contactValue:'test@example.com'},async(url,options)=>{
-  const payload=Object.fromEntries(new URLSearchParams(options.body));assert.equal(payload._replyto,'test@example.com');assert.equal(payload['אמצעי קשר מועדף'],'אימייל');return Response.json({success:true});
- });
+test('rate-limit error stays actionable',async()=>{
+ await assert.rejects(sendLeadEmail(lead,'token','',async()=>Response.json({error:'Try again shortly'},{status:429})),e=>e.code==='busy'&&e.message==='Try again shortly');
 });
-test('a response taking longer than the previous 12 second limit still succeeds',async(t)=>{
- t.mock.timers.enable({apis:['setTimeout']});
- let signal;
- const result=sendLeadEmail(lead,async(url,options)=>{
-  signal=options.signal;
-  assert.match(options.headers['Content-Type'],/^application\/x-www-form-urlencoded/);
-  assert.equal(options.credentials,'omit');
-  await new Promise(resolve=>setTimeout(resolve,20_000));return Response.json({success:true});
- });
- t.mock.timers.tick(20_000);
- assert.equal(signal.aborted,false);
- await result;
+test('timeout aborts request and never claims definite rejection',async()=>{
+ await assert.rejects(sendLeadEmail(lead,'token','',async(url,options)=>new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new Error('aborted')))),5),e=>e.code==='timeout');
 });
-test('timeout is distinct from a rejection and aborts the actual request',async()=>{
- await assert.rejects(sendLeadEmail(lead,async(url,options)=>new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new Error('aborted')))),5),e=>e.code==='timeout');
-});
-test('rate limits are reported explicitly',async()=>{
- await assert.rejects(sendLeadEmail(lead,async()=>Response.json({success:false},{status:429})),e=>e.code==='busy');
-});
-
-test('email identifies the production website without the old host', async () => {
- await sendLeadEmail(lead, async (url, options) => {
-  const payload = new URLSearchParams(options.body);
-  assert.equal(payload.get('_url'), 'https://tvuna.app/');
-  return Response.json({success:true});
- });
-});
-test('email from a browser identifies the actual preview or production origin', async (t) => {
- Object.defineProperty(globalThis, 'window', {value:{location:{origin:'https://preview.example.com'}}, configurable:true});
- t.after(() => { delete globalThis.window; });
- await sendLeadEmail(lead, async (url, options) => {
-  assert.equal(new URLSearchParams(options.body).get('_url'), 'https://preview.example.com/');
-  return Response.json({success:true});
- });
+test('network failure keeps an uncertain state',async()=>{
+ await assert.rejects(sendLeadEmail(lead,'token','',async()=>{throw new Error('offline');}),e=>e.code==='network');
 });
