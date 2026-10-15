@@ -7,7 +7,7 @@ import EmailOptions from "./email-options";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "יצירת קשר — תבונה AI",
-  description: "דברו איתנו ישירות ב־WhatsApp או באימייל, או השאירו פרטים ונחזור אליכם לשיחת היכרות.",
+  description: "דברו עם צוות תבונה AI ב־WhatsApp או באימייל לתיאום שיחת היכרות על העסק שלכם.",
   alternates: { canonical: "/contact" },
 };
 

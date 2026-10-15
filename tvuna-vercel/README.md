@@ -1,11 +1,11 @@
-# Tvuna AI — free contact update
+# Tvuna AI — launch update
 
 Prepared for `OS84/tvuna`, Vercel Root Directory `tvuna-vercel`, and `https://www.tvuna.app`.
 
 ## What works immediately after deploying this update
 
 - Direct WhatsApp chat to **+972 50-338-8741**, with an editable Hebrew draft. The visitor presses Send inside WhatsApp.
-- Direct email draft to **sincai@gmail.com**, with a Gmail web-compose alternative and a copy-address button.
+- Direct email draft to **hello@tvuna.app**, with a Gmail web-compose alternative and a copy-address button.
 - Clear Hebrew labels, keyboard focus, and responsive layout.
 - No FormSubmit browser request, activation dependency, or false “message received” state.
 - No new accounts, mailbox subscriptions, or DNS changes required for these direct buttons.
@@ -14,7 +14,7 @@ The on-site callback form is shown only when its verified sender and anti-spam s
 
 ## Upload the fix
 
-1. Extract `tvuna-contact-fix.zip`.
+1. Extract `tvuna-launch-update.zip`.
 2. Open https://github.com/OS84/tvuna and choose **Add file → Upload files**.
 3. Drag the extracted **tvuna-vercel folder** into the upload area. Keep this exact folder name so it updates the existing `tvuna-vercel/...` files. Commit the changes to `main`.
 4. In Vercel keep **Root Directory = tvuna-vercel**, **Framework = Next.js**, and **Node.js = 24.x**. Deploy the latest commit. An existing Git connection may start this automatically.
@@ -22,22 +22,22 @@ The on-site callback form is shown only when its verified sender and anti-spam s
 
 No `node_modules`, `.next`, credentials, or customer data are included in the ZIP. Do not upload the ZIP itself.
 
-## Set up hello@tvuna.app with Zoho Free
+## Business email — hello@tvuna.app
 
-The user selected Zoho's free custom-domain mailbox. This is a separate mailbox setup, not something Vercel creates. The current domain uses `ns1.vercel-dns.com` and `ns2.vercel-dns.com`. At inspection on 15 October 2026 there were no MX, root TXT, or DMARC records. Re-check before applying changes.
+The website now defaults to **hello@tvuna.app**. This address is shared by the direct email link, Gmail composer, copy-address button, and optional callback form recipient. The Gmail link is for visitors who use Gmail; the business mailbox is accessed in [Zoho Mail](https://mail.zoho.com/).
 
-1. Open [Zoho's Forever Free signup](https://workplace.zoho.com/signup?plan=free&type=org). Confirm that the actual offered plan is **Forever Free**. It is available only in selected data centers and excludes IMAP/POP/ActiveSync. Use Zoho webmail or its mobile app. If only paid plans/trials are offered, keep Dan's current Gmail; no paid subscription is needed for the website.
-2. Choose an existing domain and enter **tvuna.app**. The account owner completes signup, password, phone verification, and service terms privately.
-3. Zoho gives you a unique domain-verification TXT record. In [Vercel's tvuna.app domain settings](https://vercel.com/os84s-projects/~/domains/tvuna.app), add that exact record under DNS. Use the root name (blank in Vercel) if Zoho specifies `@`. Return to Zoho and verify.
-4. Create the **hello** mailbox. Use the MX hosts and priorities shown in **your Zoho account**, since they depend on the data center. Add those MX records at the root in Vercel. Preserve the website's A/ALIAS/CNAME records and the nameservers.
-5. Add Zoho's SPF and DKIM TXT records from its setup screen. Use one SPF record per hostname; combine authorized senders if one already exists. Verify DKIM in Zoho. Do not copy region-specific records from an unrelated tutorial.
-6. After SPF/DKIM are verified, add DMARC initially in monitoring mode following Zoho's guidance. Start with `v=DMARC1; p=none` at `_dmarc`. Reporting can be added after a report mailbox/alias is created. Tighten the policy only after checking authentication.
-7. Send a message **to** hello@tvuna.app from an outside account, then reply **from** Zoho. Check both directions and spam folders before switching the website.
-8. In the Vercel project → **Settings → Environment Variables**, set `CONTACT_EMAIL` to `hello@tvuna.app` for Production and redeploy. The direct email link, Gmail composer link, copied address, and optional form recipient update together. The Gmail button is for a visitor composing an email to you; your new business inbox is accessed in Zoho.
+The owner completed Zoho domain verification and supplied a setup screen showing all three MX records, SPF and DKIM verified on 15 October 2026. The owner also confirmed adding `CONTACT_EMAIL=hello@tvuna.app` to Vercel. No live test message has been sent by this release process.
 
-The default remains `sincai@gmail.com` until the custom mailbox is activated and this variable changes. This avoids advertising a non-working address.
+For the production project [tvuna-q5d5](https://vercel.com/os84s-projects/tvuna-q5d5/settings/environment-variables), keep `CONTACT_EMAIL` set to `hello@tvuna.app`. The code uses this same address if the variable is absent. Any explicit environment override takes precedence, so check Preview separately if you use preview deployments.
 
-Sources: [Zoho free plan](https://www.zoho.com/mail/zohomail-pricing.html), [domain verification](https://www.zoho.com/mail/help/adminconsole/domain-verification.html), [email delivery](https://www.zoho.com/mail/help/adminconsole/configure-email-delivery.html), [Vercel email DNS](https://vercel.com/docs/domains/managing-dns-records#setting-up-email-for-your-domain).
+### Final checks after deployment
+
+1. Open https://www.tvuna.app/contact in a private browser window. Confirm the visible address is **hello@tvuna.app** and the WhatsApp number is **+972 50-338-8741**.
+2. Open the email button and the Gmail alternative. Check the recipient and subject. Check the copy-address button.
+3. Open WhatsApp and check the recipient and editable Hebrew draft before pressing Send yourself.
+4. Send one email from a personal account to **hello@tvuna.app**, then reply from Zoho. Confirm arrival in both inboxes and check spam folders. DNS verification alone does not confirm message delivery.
+
+Sources: [Zoho email delivery](https://www.zoho.com/mail/help/adminconsole/configure-email-delivery.html), [Vercel environment variables](https://vercel.com/docs/environment-variables/managing-environment-variables).
 
 ## Optional: enable the on-site callback form
 
@@ -49,7 +49,7 @@ Direct contact already works without this. To send inquiries without opening the
 
 | Variable | Value |
 | --- | --- |
-| `CONTACT_EMAIL` | `hello@tvuna.app` after activation, or `sincai@gmail.com` |
+| `CONTACT_EMAIL` | `hello@tvuna.app` |
 | `CONTACT_FROM` | `Tvuna AI <website@notify.tvuna.app>` |
 | `RESEND_API_KEY` | The sending-only key from Resend |
 | `TURNSTILE_SITE_KEY` | The widget's public site key |

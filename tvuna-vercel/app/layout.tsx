@@ -3,12 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.tvuna.app"),
-  title: "תבונה AI — מפנים מקום למה שחשוב",
-  description: "טובעים בשוטף? גלו איך AI יכול לעזור לכם בעסק. פגישת מיפוי להיכרות עם האפשרויות ולזיהוי הזדמנויות מעשיות.",
+  title: "תבונה AI — העסק שלכם יכול לעבוד חכם יותר",
+  description: "פתרונות AI ואוטומציה לתהליכי העבודה בעסק שלכם. מתחילים בפגישת היכרות, מזהים הזדמנויות ובוחנים יחד מה אפשר לשפר.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
   openGraph: {
-    title: "תבונה AI | לפעול בתבונה",
-    description: "טובעים בשוטף? גלו איך AI יכול לעזור לכם בעסק. פגישת היכרות עם האפשרויות וזיהוי הזדמנויות לשיפור.",
+    title: "תבונה AI — העסק שלכם יכול לעבוד חכם יותר",
+    description: "פתרונות AI ואוטומציה לתהליכי העבודה בעסק שלכם. מתחילים בפגישת היכרות, מזהים הזדמנויות ובוחנים יחד מה אפשר לשפר.",
     type: "website",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.tvuna.app",
     locale: "he_IL",

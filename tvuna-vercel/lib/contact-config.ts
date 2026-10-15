@@ -2,8 +2,7 @@ import { validEmail, whatsappLink } from "./contact-links.ts";
 
 // Imported only by server modules. Never pass this entire object to a client component.
 export function getContactConfig(env: NodeJS.ProcessEnv = process.env) {
-  // Keep the existing reachable mailbox until the custom-domain inbox is active.
-  const email = (env.CONTACT_EMAIL || "sincai@gmail.com").trim();
+  const email = (env.CONTACT_EMAIL || "hello@tvuna.app").trim();
   const from = (env.CONTACT_FROM || "").trim();
   const fromAddress = from.match(/<([^<>]+)>$/)?.[1] || from;
   const siteUrl = env.NEXT_PUBLIC_SITE_URL || "https://www.tvuna.app";

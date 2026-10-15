@@ -9,8 +9,8 @@ const request=(changes={},headers={})=>new Request('https://www.tvuna.app/api/co
 const verified=()=>Response.json({success:true,hostname:'www.tvuna.app',action:'contact'});
 const never=async()=>{assert.fail('No provider should have been contacted');};
 
-test('default configuration shows real WhatsApp and does not advertise an uncreated mailbox',()=>{
- const c=getContactConfig({});assert.equal(c.ready,false);assert.equal(c.email,'sincai@gmail.com');assert.match(c.whatsappUrl,/^https:\/\/wa.me\/972503388741\?text=/);
+test('default configuration uses the business mailbox and WhatsApp number without enabling an unconfigured form',()=>{
+ const c=getContactConfig({});assert.equal(c.ready,false);assert.equal(c.email,'hello@tvuna.app');assert.match(c.whatsappUrl,/^https:\/\/wa.me\/972503388741\?text=/);
 });
 test('WhatsApp requires an international number and encodes the draft',()=>{
  assert.equal(whatsappNumber('+972 50-338-8741'),'972503388741');assert.equal(whatsappLink('0503388741'),null);
